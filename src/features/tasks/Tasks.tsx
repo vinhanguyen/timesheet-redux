@@ -4,12 +4,11 @@ import { Task } from "../../data";
 import EditableValue from "../../EditableValue";
 import { copyToClipboard, formatCurrency, formatTimestamp, getHms, msToHours } from "../../utils";
 import { selectCurrentJob } from "../jobs/jobsSlice";
-import { deleteTask, loadTasks, punch, selectTasks, selectUnfinishedTask, updateTask } from "./tasksSlice";
+import { deleteTask, loadTasks, selectTasks, updateTask } from "./tasksSlice";
 
 export default function Tasks() {
   const tasks = useAppSelector(selectTasks);
   const currentJob = useAppSelector(selectCurrentJob);
-  const unfinishedTask = useAppSelector(selectUnfinishedTask);
 
   const [now, setNow] = useState(Date.now());
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -55,10 +54,6 @@ export default function Tasks() {
     }
   }
 
-  function handlePunch() {
-    dispatch(punch());
-  }
-
   function handleUpdate(task: Task) {
     dispatch(updateTask(task));
   }
@@ -86,11 +81,6 @@ export default function Tasks() {
         <tr>
           <th colSpan={7}>
             <button onClick={handleDelete} disabled={selectedIds.length === 0}>Delete</button>
-            {' '}
-            <button onClick={handlePunch} disabled={!currentJob}
-              style={{backgroundColor: unfinishedTask ? "lightsalmon" : "lightgreen"}}>
-              {unfinishedTask ? 'Stop' : 'Start'}
-            </button>
           </th>
         </tr>
         <tr>

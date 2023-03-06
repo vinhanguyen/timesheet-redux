@@ -1,6 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Job, getJobs, createJob as createJobIdb, updateJob as updateJobIdb, deleteJob as deleteJobIdb, getCurrentJobId, setCurrentJobId as setCurrentJobIdIdb } from '../../data';
 import { RootState, AppThunk } from '../../app/store';
+import { loadTasks } from '../tasks/tasksSlice';
 
 export interface JobsState {
   jobs: Job[];
@@ -100,6 +101,7 @@ export const setCurrentJobId = (id: number): AppThunk => {
   return async (dispatch, getState) => {
     const currentId = await setCurrentJobIdIdb(id);
     dispatch(setCurrentJobIdSuccess(currentId));
+    dispatch(loadTasks());
   };
 };
 

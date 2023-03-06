@@ -5,6 +5,7 @@ import CreateJobForm from "./features/jobs/CreateJobForm";
 import EditJobForm from "./features/jobs/EditJobForm";
 import Jobs from "./features/jobs/Jobs";
 import Tasks from "./features/tasks/Tasks";
+import Help from "./Help";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
       {
         path: 'jobs/:id',
         element: <EditJobForm />
+      },
+      {
+        path: 'help',
+        element: <Help />
       },
     ]
   }
