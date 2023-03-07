@@ -22,7 +22,7 @@ export default function Tasks() {
 
   useEffect(() => {
     dispatch(loadTasks());
-  }, [currentJob]);
+  }, [dispatch, currentJob]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
