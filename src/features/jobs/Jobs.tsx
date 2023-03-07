@@ -83,6 +83,11 @@ export default function Jobs() {
               </TableCell>
             </TableRow>
           ))}
+          {jobs.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={4} sx={{textAlign: 'center'}}>No jobs</TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </>

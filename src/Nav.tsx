@@ -42,9 +42,7 @@ export default function Nav() {
           <MenuItem onClick={() => handleMenuItem('/jobs')}>Jobs</MenuItem>
           <MenuItem onClick={() => handleMenuItem('/help')}>Help</MenuItem>
         </Menu>
-        {currentJob && (
-          <Typography variant="h6">{currentJob.name}</Typography>
-        )}
+        <Typography variant="h6">{currentJob ? currentJob.name : 'Timesheet'}</Typography>
         <Button
           disabled={!currentJob}
           variant="outlined"
