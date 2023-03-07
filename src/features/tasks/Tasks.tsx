@@ -134,20 +134,27 @@ export default function Tasks() {
               </TableCell>
             </TableRow>
           ))}
-          <TableRow>
-            <TableCell colSpan={3}></TableCell>
-            <TableCell>
-              {formatTime(totalTime)}
-              <IconButton onClick={handleCopy}>
-                <Tooltip title="Copy hours">
-                  <ContentCopy />
-                </Tooltip>
-              </IconButton>
-            </TableCell>
-            <TableCell>{formatCurrency(currentJob?.rate || 0)}</TableCell>
-            <TableCell>{formatCurrency(msToHours(totalTime)*(currentJob?.rate || 0))}</TableCell>
-            <TableCell></TableCell>
-          </TableRow>
+          {tasks.length > 0 ? (
+              <TableRow>
+                <TableCell colSpan={3}></TableCell>
+                <TableCell>
+                  {formatTime(totalTime)}
+                  <IconButton onClick={handleCopy}>
+                    <Tooltip title="Copy hours">
+                      <ContentCopy />
+                    </Tooltip>
+                  </IconButton>
+                </TableCell>
+                <TableCell>{formatCurrency(currentJob?.rate || 0)}</TableCell>
+                <TableCell>{formatCurrency(msToHours(totalTime)*(currentJob?.rate || 0))}</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} sx={{textAlign: 'center'}}>No work</TableCell>
+              </TableRow>
+            )
+          }
         </TableBody>
       </Table>
     </>
