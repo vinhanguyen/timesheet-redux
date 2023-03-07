@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import ErrorPage from "./ErrorPage";
-import CreateJobForm from "./features/jobs/CreateJobForm";
-import EditJobForm from "./features/jobs/EditJobForm";
+import CreateJob from "./features/jobs/CreateJob";
+import EditJob from "./features/jobs/EditJob";
 import Jobs from "./features/jobs/Jobs";
 import Tasks from "./features/tasks/Tasks";
 import Help from "./Help";
@@ -23,11 +23,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'jobs/create',
-        element: <CreateJobForm />
+        element: <CreateJob />
       },
       {
         path: 'jobs/:id',
-        element: <EditJobForm />
+        element: <EditJob />
       },
       {
         path: 'help',

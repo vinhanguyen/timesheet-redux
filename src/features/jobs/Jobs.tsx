@@ -1,5 +1,9 @@
+import { AddBox, Delete, Edit } from "@mui/icons-material";
+import { IconButton, Radio, Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from "@mui/material";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import ConfirmDialog from "../../ConfirmDialog";
 import { Job } from "../../data";
 import { formatCurrency } from "../../utils";
 import { deleteJob, selectCurrentJobId, selectJobs, setCurrentJobId } from "./jobsSlice";
@@ -14,48 +18,73 @@ export default function Jobs() {
     dispatch(setCurrentJobId(id));
   }
 
-  function handleDelete(job: Job) {
-    if (window.confirm(`Delete ${job.name}?`)) {
-      dispatch(deleteJob(job.id));
+  function handleDelete() {
+    if (deletedJob) {
+      dispatch(deleteJob(deletedJob.id));
     }
+    setShowConfirm(false);
   }
+
+  const [deletedJob, setDeletedJob] = useState<Job|null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   return (
     <>
-      <table>
-        <thead>
-          <tr>
-            <th colSpan={4}>
-              <Link to="/jobs/create">Add</Link>
-            </th>
-          </tr>
-          <tr>
-            <th>Current</th>
-            <th>Name</th>
-            <th>Rate</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
+      <ConfirmDialog
+        message={`Delete ${deletedJob?.name}?`}
+        open={showConfirm}
+        onCancel={() => setShowConfirm(false)}
+        onConfirm={handleDelete}
+        onClose={() => setShowConfirm(false)}
+      />
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{textAlign: 'center'}}>
+              <Link to="/jobs/create">
+                <Tooltip title="Add job">
+                  <AddBox color="action" />
+                </Tooltip>
+              </Link>
+            </TableCell>
+            <TableCell colSpan={3}></TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{textAlign: 'center'}}>Current</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Rate</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {jobs.map(j => (
-            <tr key={j.id}>
-              <td>
-                <input type="radio" 
-                  checked={j.id === currentJobId} 
-                  onChange={() => handleChangeCurrent(j.id)}
-                  title="Make this current job" />
-              </td>
-              <td>{j.name}</td>
-              <td>{formatCurrency(j.rate)}</td>
-              <td>
-                <Link to={`/jobs/${j.id}`}>Edit</Link>
-                {' '}
-                <button onClick={() => handleDelete(j)}>Delete</button>
-              </td>
-            </tr>
+            <TableRow key={j.id}>
+              <TableCell sx={{textAlign: 'center'}}>
+                <Tooltip title="Make this current job">
+                  <Radio
+                    checked={j.id === currentJobId}
+                    onChange={() => handleChangeCurrent(j.id)}
+                  />
+                </Tooltip>
+              </TableCell>
+              <TableCell>{j.name}</TableCell>
+              <TableCell>{formatCurrency(j.rate)}</TableCell>
+              <TableCell sx={{display: 'flex', alignItems: 'center'}}>
+                <Link to={`/jobs/${j.id}`}>
+                  <Tooltip title="Edit">
+                    <Edit color="action" />
+                  </Tooltip>
+                </Link>
+                <IconButton onClick={() => {setDeletedJob(j); setShowConfirm(true);}}>
+                  <Tooltip title="Delete">
+                    <Delete />
+                  </Tooltip>
+                </IconButton>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </>
   );
 }

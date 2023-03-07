@@ -1,7 +1,9 @@
+import { Cancel, Check, Edit } from "@mui/icons-material";
+import { IconButton, Input, InputAdornment, Tooltip } from "@mui/material";
 import { useState } from "react";
 
 export default function EditableValue({value: initialValue = '', isValid = () => true, onSave}: any) {
-  const [value, setValue] = useState<string>(initialValue);
+  const [value, setValue] = useState(initialValue);
   const [edit, setEdit] = useState(false);
 
   function handleCancel() {
@@ -20,17 +22,32 @@ export default function EditableValue({value: initialValue = '', isValid = () =>
     <>
       {edit ? (
         <>
-          <input value={value} onChange={e => setValue(e.target.value)} />
-          {' '}
-          <button onClick={handleCancel}>Cancel</button>
-          {' '}
-          <button onClick={handleSave} disabled={!valid}>Save</button>
+          <Input
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton onClick={handleCancel}>
+                  <Tooltip title="Cancel">
+                    <Cancel />
+                  </Tooltip>
+                </IconButton>
+                <IconButton onClick={handleSave} disabled={!valid}>
+                  <Tooltip title="Save">
+                    <Check />
+                  </Tooltip>
+                </IconButton>
+              </InputAdornment>
+            } />
         </>
       ) : (
         <span>
           {value}
-          {' '}
-          <button onClick={() => setEdit(true)}>Edit</button>
+          <IconButton onClick={() => setEdit(true)}>
+            <Tooltip title="Edit">
+              <Edit />
+            </Tooltip>
+          </IconButton>
         </span>
       )}
     </>

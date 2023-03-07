@@ -1,6 +1,8 @@
+import { Box } from "@mui/material";
+
 export default function Help() {
   return (
-    <div>
+    <Box p={2}>
       <p>Usage:</p>
       <ol>
         <li>Add jobs</li>
@@ -8,6 +10,6 @@ export default function Help() {
         <li>Click start to start work</li>
         <li>Click stop to stop work</li>
       </ol>
-    </div>
+    </Box>
   );
 }

@@ -1,4 +1,7 @@
-import { NavLink } from "react-router-dom";
+import { Menu as MenuIcon, PunchClock } from "@mui/icons-material";
+import { AppBar, Button, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from "@mui/material";
+import { MouseEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { selectCurrentJob } from "./features/jobs/jobsSlice";
 import { punch, selectUnfinishedTask } from "./features/tasks/tasksSlice";
@@ -12,31 +15,47 @@ export default function Nav() {
   function handlePunch() {
     dispatch(punch());
   }
+  
+  const [anchorEl, setAnchorEl] = useState<null|HTMLElement>(null);
+
+  const navigate = useNavigate();
+
+  function handleMenu(e: MouseEvent<HTMLButtonElement>) {
+    setAnchorEl(e.currentTarget);
+  }
+
+  function handleMenuItem(to: string) {
+    navigate(to);
+    setAnchorEl(null);
+  }
 
   return (
-    <nav>
-      <ul>
+    <AppBar position="static" color="default">
+      <Toolbar>
+        <IconButton color="inherit" onClick={handleMenu}>
+          <Tooltip title="Menu">
+            <MenuIcon />
+          </Tooltip>
+        </IconButton>
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
+          <MenuItem onClick={() => handleMenuItem('/')}>Timesheet</MenuItem>
+          <MenuItem onClick={() => handleMenuItem('/jobs')}>Jobs</MenuItem>
+          <MenuItem onClick={() => handleMenuItem('/help')}>Help</MenuItem>
+        </Menu>
         {currentJob && (
-          <li>
-            <h2>{currentJob.name}</h2>
-          </li>
+          <Typography variant="h6">{currentJob.name}</Typography>
         )}
-        <li>
-          <NavLink to="/">Timesheet</NavLink>
-        </li>
-        <li>
-          <NavLink to="/jobs">Jobs</NavLink>
-        </li>
-        <li>
-          <NavLink to="/help">Help</NavLink>
-        </li>
-        <li>
-          <button onClick={handlePunch} disabled={!currentJob}
-            style={{backgroundColor: unfinishedTask ? "lightsalmon" : "lightgreen"}}>
-            {unfinishedTask ? 'Stop' : 'Start'}
-          </button>
-        </li>
-      </ul>
-    </nav>
+        <Button
+          disabled={!currentJob}
+          variant="outlined"
+          startIcon={<PunchClock />}
+          color={unfinishedTask ? 'error' : 'success'}
+          onClick={handlePunch}
+          sx={{marginLeft: 'auto'}}
+        >
+          {unfinishedTask ? 'Stop' : 'Start'}
+        </Button>
+      </Toolbar>
+    </AppBar>
   );
 }

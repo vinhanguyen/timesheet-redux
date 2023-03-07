@@ -1,5 +1,8 @@
+import { ContentCopy, Delete } from "@mui/icons-material";
+import { Checkbox, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from "@mui/material";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import ConfirmDialog from "../../ConfirmDialog";
 import { Task } from "../../data";
 import EditableValue from "../../EditableValue";
 import { copyToClipboard, formatCurrency, formatTimestamp, getHms, msToHours } from "../../utils";
@@ -13,6 +16,7 @@ export default function Tasks() {
   const [now, setNow] = useState(Date.now());
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -45,13 +49,12 @@ export default function Tasks() {
   }
 
   function handleDelete() {
-    if (window.confirm(`Delete ${selectedIds.length} tasks?`)) {
-      for (const id of selectedIds) {
-        dispatch(deleteTask(id));
-      }
-      setSelectedIds([]);
-      setSelectAll(false);
+    for (const id of selectedIds) {
+      dispatch(deleteTask(id));
     }
+    setSelectedIds([]);
+    setSelectAll(false);
+    setShowConfirm(false);
   }
 
   function handleUpdate(task: Task) {
@@ -76,56 +79,77 @@ export default function Tasks() {
   }
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th colSpan={7}>
-            <button onClick={handleDelete} disabled={selectedIds.length === 0}>Delete</button>
-          </th>
-        </tr>
-        <tr>
-          <th>
-            <input type="checkbox" checked={selectAll} onChange={handleSelectAll} />
-          </th>
-          <th>Start</th>
-          <th>Finish</th>
-          <th>Time</th>
-          <th>Rate</th>
-          <th>Total</th>
-          <th>Comment</th>
-        </tr>
-      </thead>
-      <tbody>
-        {tasks.map(t => (
-          <tr key={t.id}>
-            <td>
-              <input type="checkbox" 
-                checked={selectedIds.some(id => id === t.id)} 
-                onChange={e => handleSelect(e.target.checked, t.id)} />
-            </td>
-            <td>{formatTimestamp(t.start)}</td>
-            <td>{formatTimestamp(t.finish || now)}</td>
-            <td>{formatTime(timeDiff(t))}</td>
-            <td>{formatCurrency(currentJob?.rate || 0)}</td>
-            <td>{formatCurrency(msToHours(timeDiff(t))*(currentJob?.rate || 0))}</td>
-            <td>
-              <EditableValue value={t.comment} 
-                onSave={(comment: string) => handleUpdate({...t, comment})} />
-            </td>
-          </tr>
-        ))}
-        <tr>
-          <td colSpan={3}></td>
-          <td>
-            {formatTime(totalTime)}
-            {' '}
-            <button onClick={handleCopy}>Copy</button>
-          </td>
-          <td>{formatCurrency(currentJob?.rate || 0)}</td>
-          <td>{formatCurrency(msToHours(totalTime)*(currentJob?.rate || 0))}</td>
-          <td></td>
-        </tr>
-      </tbody>
-    </table>
+    <>
+      <ConfirmDialog
+        message={`Delete ${selectedIds.length} tasks?`}
+        open={showConfirm}
+        onCancel={() => setShowConfirm(false)}
+        onConfirm={handleDelete}
+        onClose={() => setShowConfirm(false)}
+      />
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{textAlign: 'center'}}>
+              <IconButton onClick={() => setShowConfirm(true)} disabled={selectedIds.length === 0}>
+                <Tooltip title="Delete">
+                  <Delete />
+                </Tooltip>
+              </IconButton>
+            </TableCell>
+            <TableCell colSpan={6}></TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{textAlign: 'center'}}>
+              <Tooltip title="Select all">
+                <Checkbox checked={selectAll} onChange={handleSelectAll} />
+              </Tooltip>
+            </TableCell>
+            <TableCell>Start</TableCell>
+            <TableCell>Finish</TableCell>
+            <TableCell>Time</TableCell>
+            <TableCell>Rate</TableCell>
+            <TableCell>Total</TableCell>
+            <TableCell>Comment</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {tasks.map(t => (
+            <TableRow key={t.id}>
+              <TableCell sx={{textAlign: 'center'}}>
+                <Tooltip title="Select">
+                  <Checkbox 
+                    checked={selectedIds.some(id => id === t.id)} 
+                    onChange={e => handleSelect(e.target.checked, t.id)} />
+                </Tooltip>
+              </TableCell>
+              <TableCell>{formatTimestamp(t.start)}</TableCell>
+              <TableCell>{formatTimestamp(t.finish || now)}</TableCell>
+              <TableCell>{formatTime(timeDiff(t))}</TableCell>
+              <TableCell>{formatCurrency(currentJob?.rate || 0)}</TableCell>
+              <TableCell>{formatCurrency(msToHours(timeDiff(t))*(currentJob?.rate || 0))}</TableCell>
+              <TableCell>
+                <EditableValue value={t.comment} 
+                  onSave={(comment: string) => handleUpdate({...t, comment})} />
+              </TableCell>
+            </TableRow>
+          ))}
+          <TableRow>
+            <TableCell colSpan={3}></TableCell>
+            <TableCell>
+              {formatTime(totalTime)}
+              <IconButton onClick={handleCopy}>
+                <Tooltip title="Copy hours">
+                  <ContentCopy />
+                </Tooltip>
+              </IconButton>
+            </TableCell>
+            <TableCell>{formatCurrency(currentJob?.rate || 0)}</TableCell>
+            <TableCell>{formatCurrency(msToHours(totalTime)*(currentJob?.rate || 0))}</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </>
   );
 }
